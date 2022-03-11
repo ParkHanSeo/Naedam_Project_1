@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StaffMapper">
+	
+	<resultMap id="staffSelectMap" type="staff">
+		<result property="staffNo"							column="STAFF_NO"			jdbcType="NUMERIC"/>
+		<result property="staffName"						column="STAFF_NAME"			jdbcType="VARCHAR"/>
+		<result property="juminNo"							column="JUMIN_NO"			jdbcType="VARCHAR"/> 
+		<result property="codeSchool.schoolCode"			column="SCHOOL_CODE"		jdbcType="NUMERIC"/>
+		<result property="codeDepartment.departmentCode"	column="DEPARTMENT_CODE"	jdbcType="NUMERIC"/>
+		<result property="graduateDay"						column="GRADUATE_DAY"		jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="codeDepartmentSelectMap" type="codeDepartment">
+		<result property="departmentCode"	column="DEPARTMENT_CODE"	jdbcType="NUMERIC"/>
+		<result property="departmentName"	column="DEPARTMENT_NAME"	jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="codeSkillMap" type="codeSkill">
+		<result property="skillCode"		column="SKILL_CODE"			jdbcType="NUMERIC"/>
+		<result property="skillName"		column="SKILL_NAME"			jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="codeSchoolMap" type="codeSchool">
+		<result property="schoolCode"		column="SCHOOL_CODE"		jdbcType="NUMERIC"/>
+		<result property="schoolName"		column="SCHOOL_NAME"		jdbcType="VARCHAR"/>
+	</resultMap>			
+	
+	<resultMap id="staffSkillMap" type="staffSkill">
+		<result property="staffSkillNo"		column="STAFF_SKILL_NO"	jdbcType="NUMERIC"/>
+		<result property="staffNo"			column="STAFF_NO"		jdbcType="NUMERIC"/>
+		<result property="skillCode"		column="SKILL_CODE"		jdbcType="NUMERIC"/>
+	</resultMap>		
+	
+	
+	<insert id="addStaff"	parameterType="staff">
+		INSERT
+		INTO staff( staff_no, staff_name, jumin_no, school_code, department_code, graduate_day)
+		VALUES	  (staff_seq.nextval, #{staffName:VARCHAR}, #{juminNo:VARCHAR}, #{codeSchool.schoolCode:NUMERIC},
+				   #{codeDepartment.departmentCode:NUMERIC}, #{graduateDay:VARCHAR} )
+	</insert>
+		
+	
+	<insert id="addStaffSkill" parameterType="staffSkill">
+		INSERT
+		INTO staff_Skill( staff_skill_no, staff_no, skill_code)
+		VALUES	  	   ( staff_skill_seq.nextval, #{staffNo:NUMERIC}, #{skillCode:NUMERIC})	
+	</insert>
+	
+	<select id="getStaffList" parameterType="search" resultMap="staffSelectMap">
+	
+		SELECT *
+		FROM ( SELECT inner_table.* , ROWNUM AS row_seq
+					   FROM			( SELECT DISTINCT
+					   						 s.staff_no,
+					   						 s.staff_name,
+					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
+					   						 s.department_code,
+					   						 s.school_code,
+					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
+					   					 	 WHERE s.school_code = cs.school_code
+					   					 	 AND   s.department_code = cd.department_code
+					   					 	 AND   s.staff_no = ss.staff_no
+					   					 	 AND   ss.skill_code = ck.skill_code
+												<if test="searchName !='' and searchName != null ">
+										 			AND (s.staff_name like '%'||#{searchName}||'%')
+												</if>	
+												<if test="searchDepartment != '' and searchDepartment != null">
+													AND s.department_code = #{searchDepartment}
+												</if>
+												<if test="searchEducation != '' and searchEducation != null ">
+													AND s.school_code = #{searchEducation}
+												</if>
+												<if test="searchSkill != '' and searchSkill != null ">
+													AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+												</if>
+												<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+													AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+												</if>
+												<if test="searchGender != '' and searchGender != null ">
+													AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+												</if>															
+											ORDER BY s.staff_no ) inner_table
+						WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
+	
+	</select>
+	
+	<select id="getAllStaffList" parameterType="search" resultMap="staffSelectMap">
+	
+		SELECT *
+		FROM ( SELECT inner_table.* , ROWNUM AS row_seq
+					   FROM			( SELECT DISTINCT
+					   						 s.staff_no,
+					   						 s.staff_name,
+					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
+					   						 s.department_code,
+					   						 s.school_code,
+					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
+					   					 	 WHERE s.school_code = cs.school_code
+					   					 	 AND   s.department_code = cd.department_code
+					   					 	 AND   s.staff_no = ss.staff_no
+					   					 	 AND   ss.skill_code = ck.skill_code		   					 	 
+											 ORDER BY s.staff_no ) inner_table
+						WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
+	
+	</select>	
+	
+	
+	
+	<select id="getStaff" parameterType="string" resultMap="staffSelectMap">
+		SELECT
+		staff_no,
+		staff_name,
+		jumin_no,
+		department_code,
+		school_code
+		FROM staff
+		WHERE jumin_no = #{juminNo}
+	</select>
+	
+	<select id="getStaff2" parameterType="int" resultMap="staffSelectMap">
+		SELECT
+		staff_no,
+		staff_name,
+		jumin_no,
+		department_code,
+		school_code,
+		graduate_day
+		FROM staff
+		WHERE staff_no = #{staffNo}
+	</select>	
+	
+	
+	<update id="updateStaff" parameterType="staff">
+		UPDATE staff
+		<set>
+			staff_name = #{staffName:VARCHAR} ,
+			department_code = #{codeDepartment.departmentCode:NUMERIC} ,
+			school_code = #{codeSchool.schoolCode:NUMERIC} ,
+			graduate_day = #{graduateDay:VARCHAR}
+		</set>
+		WHERE jumin_no = #{juminNo}
+	</update>
+	
+	<update id="updateStaffSkill" parameterType="staffSkill">
+		UPDATE staff_Skill
+		<set>
+			skill_code = #{skillCode}
+		</set>
+		WHERE staff_no = #{staffNo}
+	</update>
+	
+	<delete id="deleteStaff" parameterType="String">
+		DELETE
+		FROM staff
+		WHERE jumin_no = #{juminNo}
+	</delete>
+	
+	<delete id="deleteStaffSkill" parameterType="int">
+		DELETE
+		FROM staff_Skill
+		WHERE staff_no = #{staffNo}
+	</delete>
+	
+
+	<select  id="getTotalCount"  parameterType="search"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	SELECT s.staff_no,
+					   						 s.staff_name,
+					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
+					   						 s.department_code,
+					   						 s.school_code,
+					   						 ck.skill_code,
+					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
+					   					 	 WHERE s.school_code = cs.school_code
+					   					 	 AND   s.department_code = cd.department_code
+					   					 	 AND   s.staff_no = ss.staff_no
+					   					 	 AND   ss.skill_code = ck.skill_code
+												<if test="searchName !='' and searchName != null ">
+										 			AND (s.staff_name like '%'||#{searchName}||'%')
+												</if>	
+												<if test="searchDepartment != '' and searchDepartment != null">
+													AND s.department_code = #{searchDepartment}
+												</if>
+												<if test="searchEducation != '' and searchEducation != null ">
+													AND s.school_code = #{searchEducation}
+												</if>
+												<if test="searchSkill != '' and searchSkill != null ">
+													AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+												</if>
+												<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+													AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+												</if>
+												<if test="searchGender != '' and searchGender != null ">
+													AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+												</if>
+					) countTable						
+	 </select>	
+	  
+	
+</mapper>
