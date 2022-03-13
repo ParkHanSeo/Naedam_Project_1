@@ -69,6 +69,71 @@
 				location.href="/staff/getStaff?staffNo="+$("input[name='staffNo']").val();
 			});
 			
+												
+			$("button[name='search2']").on("click" , function(){
+				
+				var formData = $("form[name=searchForm]").serialize();
+				
+				console.log(formData);
+				
+				$.ajax({
+					url : "/staff/json/listStaff/" ,
+					type : "POST" ,
+		            data : formData,
+		            dataType : 'json',
+					headers : {
+						"Accept" : "application/json",
+						"Content-Type" : "application/json"						
+					} ,
+					
+					success : function(JSONData){
+						
+						var display = "";
+					
+						for(var i = 0; i < JSONData.list.length; i++){
+							
+							if(JSONData.list[i].juminNo == 1){
+								JSONData.list[i].juminNo = "남"
+							}else if(JSONData.list[i].juminNo == 2){
+								JSONData.list[i].juminNo = "여"
+							}
+							if(JSONData.list[i].codeDepartment.departmentCode == 1){
+								JSONData.list[i].codeDepartment.departmentCode = "컨설팅사업부"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 2){
+								JSONData.list[i].codeDepartment.departmentCode = "하이테크사업부"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 3){
+								JSONData.list[i].codeDepartment.departmentCode = "SI사업부"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 4){
+								JSONData.list[i].codeDepartment.departmentCode = "반도체사업부"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 5){
+								JSONData.list[i].codeDepartment.departmentCode = "기업부설연구소"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 6){
+								JSONData.list[i].codeDepartment.departmentCode = "전략기획팀"
+							}else if(JSONData.list[i].codeDepartment.departmentCode == 7){
+								JSONData.list[i].codeDepartment.departmentCode = "경영지원팀"
+							}
+							
+							display +='<tr>'
+									+ '<td align="center">'+(i+1)+'</td>'
+									+ '<td align="center">'+JSONData.list[i].staffName+'</td>'
+									+ '<td align="center">'+JSONData.list[i].juminNo+'</td>'
+									+ '<td align="center">'+JSONData.list[i].codeDepartment.departmentCode+'</td>'
+									+ '<td align="center">'+JSONData.list[i].graduateDay+'</td>'
+									+ '<td align="center">'
+									+ '	<button type="button" name="update/delete" id="update/delete2">수정/삭제</button>'
+									+ '</td>'
+									+ '<input type="hidden" id="staffNo" name="staffNo" value="'+JSONData.list[i].staffNo+'">'
+									+ '</tr>';
+							
+							
+						}$("#searchTable").append(display);
+						
+										
+					}
+					
+				});				
+			});			
+			
 		})
 	</script>
 	
@@ -81,7 +146,7 @@
 		    <tr align ="center" color="gray">
 				<p><td colspan = "6">사원 정보 검색</td></p>
 		    </tr>
-		<form class="form-inline" name="detailForm" id="searchForm">
+		<form class="form-inline" name="searchForm" id="searchForm">
 		  <div class="form-group">
 				    <tr align = "center" >
 						<td>
@@ -196,6 +261,12 @@
 	   		검색건수 -> ${resultPage.totalCount}건
 	   	</div>
 	</div>
+	<div align = "center">
+		<button type="button" name="search2" style="width: 90px;">검색2</button>
+		<button type="button" name="allSearch2" style="width: 90px;">전부검색2</button>
+		<button type="button" name="reset2"  style="width: 90px;">초기화2</button>
+		<button type="button" name="input2" style="width: 90px;">등록2</button>		
+	</div>
 	<table border="1" width ="1000" height="20" align = "center" >
 	<div>
 	    <thead>
@@ -208,7 +279,7 @@
 	        <th></th>
 	      </tr>
 	    </thead>
-	    <tbody>
+	    <tbody id="searchTable">
 	    	<c:set var="i" value="0"/>
 			  <c:forEach var="staff" items="${list}">
 				<c:set var="i" value="${ i+1 }" />

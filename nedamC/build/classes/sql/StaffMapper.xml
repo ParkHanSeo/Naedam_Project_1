@@ -173,36 +173,36 @@
 
 	<select  id="getTotalCount"  parameterType="search"	 resultType="int">
 	  	SELECT COUNT(*)
-	  	FROM(	SELECT s.staff_no,
-					   						 s.staff_name,
-					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
-					   						 s.department_code,
-					   						 s.school_code,
-					   						 ck.skill_code,
-					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
-					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
-					   					 	 WHERE s.school_code = cs.school_code
-					   					 	 AND   s.department_code = cd.department_code
-					   					 	 AND   s.staff_no = ss.staff_no
-					   					 	 AND   ss.skill_code = ck.skill_code
-												<if test="searchName !='' and searchName != null ">
-										 			AND (s.staff_name like '%'||#{searchName}||'%')
-												</if>	
-												<if test="searchDepartment != '' and searchDepartment != null">
-													AND s.department_code = #{searchDepartment}
-												</if>
-												<if test="searchEducation != '' and searchEducation != null ">
-													AND s.school_code = #{searchEducation}
-												</if>
-												<if test="searchSkill != '' and searchSkill != null ">
-													AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
-												</if>
-												<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
-													AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
-												</if>
-												<if test="searchGender != '' and searchGender != null ">
-													AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
-												</if>
+	  	FROM(	SELECT   DISTINCT
+	  					 s.staff_no,
+   						 s.staff_name,
+   						 SUBSTR(s.jumin_no,8,1) jumin_no,
+   						 s.department_code,
+   						 s.school_code,
+   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
+   					 	 WHERE s.school_code = cs.school_code
+   					 	 AND   s.department_code = cd.department_code
+   					 	 AND   s.staff_no = ss.staff_no
+   					 	 AND   ss.skill_code = ck.skill_code
+							<if test="searchName !='' and searchName != null ">
+					 			AND (s.staff_name like '%'||#{searchName}||'%')
+							</if>	
+							<if test="searchDepartment != '' and searchDepartment != null">
+								AND s.department_code = #{searchDepartment}
+							</if>
+							<if test="searchEducation != '' and searchEducation != null ">
+								AND s.school_code = #{searchEducation}
+							</if>
+							<if test="searchSkill != '' and searchSkill != null ">
+								AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+							</if>
+							<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+								AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+							</if>
+							<if test="searchGender != '' and searchGender != null ">
+								AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+							</if>
 					) countTable						
 	 </select>	
 	  
