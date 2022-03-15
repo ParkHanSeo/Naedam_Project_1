@@ -73,6 +73,14 @@ public class StaffServiceImpl implements StaffService {
 	public Staff getStaff2(int staffNo) throws Exception{
 		return staffDao.getStaff2(staffNo);
 	}	
+	
+	public StaffSkill getStaffSkill(int staffNo) throws Exception{
+		return staffDao.getStaffSkill(staffNo);
+	}
+	
+	public List<StaffSkill> getStaffSkill2(int staffNo) throws Exception {
+		return staffDao.getStaffSkill2(staffNo);
+	}
 
 	public void updateStaff(Staff staff) throws Exception {
 		staffDao.updateStaff(staff);
@@ -89,6 +97,10 @@ public class StaffServiceImpl implements StaffService {
 	public void deleteStaffSkill(int staffNo) throws Exception {
 		staffDao.deleteStaffSkill(staffNo);
 	}
+
+
+
+
 	
 
 

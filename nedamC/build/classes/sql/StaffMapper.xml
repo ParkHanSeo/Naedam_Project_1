@@ -13,6 +13,7 @@
 		<result property="codeSchool.schoolCode"			column="SCHOOL_CODE"		jdbcType="NUMERIC"/>
 		<result property="codeDepartment.departmentCode"	column="DEPARTMENT_CODE"	jdbcType="NUMERIC"/>
 		<result property="graduateDay"						column="GRADUATE_DAY"		jdbcType="VARCHAR"/>
+		<result property="regDate"							column="REG_DATE"		jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	<resultMap id="codeDepartmentSelectMap" type="codeDepartment">
@@ -39,9 +40,9 @@
 	
 	<insert id="addStaff"	parameterType="staff">
 		INSERT
-		INTO staff( staff_no, staff_name, jumin_no, school_code, department_code, graduate_day)
+		INTO staff( staff_no, staff_name, jumin_no, school_code, department_code, graduate_day, reg_date)
 		VALUES	  (staff_seq.nextval, #{staffName:VARCHAR}, #{juminNo:VARCHAR}, #{codeSchool.schoolCode:NUMERIC},
-				   #{codeDepartment.departmentCode:NUMERIC}, #{graduateDay:VARCHAR} )
+				   #{codeDepartment.departmentCode:NUMERIC}, #{graduateDay:VARCHAR}, SYSDATE )
 	</insert>
 		
 	
@@ -61,7 +62,8 @@
 					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
 					   						 s.department_code,
 					   						 s.school_code,
-					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day,
+					   						 s.reg_date
 					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
 					   					 	 WHERE s.school_code = cs.school_code
 					   					 	 AND   s.department_code = cd.department_code
@@ -85,7 +87,7 @@
 												<if test="searchGender != '' and searchGender != null ">
 													AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
 												</if>															
-											ORDER BY s.staff_no ) inner_table
+											ORDER BY s.reg_date DESC ) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
 	
@@ -101,13 +103,28 @@
 					   						 SUBSTR(s.jumin_no,8,1) jumin_no,
 					   						 s.department_code,
 					   						 s.school_code,
-					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+					   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day,
+					   						 s.reg_date
 					   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
 					   					 	 WHERE s.school_code = cs.school_code
 					   					 	 AND   s.department_code = cd.department_code
 					   					 	 AND   s.staff_no = ss.staff_no
 					   					 	 AND   ss.skill_code = ck.skill_code		   					 	 
-											 ORDER BY s.staff_no ) inner_table
+											 <if test="searchSort != '' and searchSort != null and searchSort == 1 ">
+											 	ORDER BY s.reg_date DESC
+											 </if>
+											 <if test="searchSort != '' and searchSort != null and searchSort == 2 ">
+											 	ORDER BY s.staff_name ASC
+											 </if>
+											 <if test="searchSort != '' and searchSort != null and searchSort == 3 ">
+											 	ORDER BY jumin_no ASC
+											 </if>
+											 <if test="searchSort != '' and searchSort != null and searchSort == 4 ">
+											 	ORDER BY s.department_code DESC
+											 </if>
+											 <if test="searchSort != '' and searchSort != null and searchSort == 5 ">
+											 	ORDER BY graduate_day DESC
+											 </if> ) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
 	
@@ -121,7 +138,8 @@
 		staff_name,
 		jumin_no,
 		department_code,
-		school_code
+		school_code,
+		reg_date
 		FROM staff
 		WHERE jumin_no = #{juminNo}
 	</select>
@@ -133,8 +151,18 @@
 		jumin_no,
 		department_code,
 		school_code,
-		graduate_day
+		graduate_day,
+		reg_date
 		FROM staff
+		WHERE staff_no = #{staffNo}
+	</select>
+	
+	<select id="getStaffSkill" parameterType="int" resultMap="staffSkillMap">
+		SELECT
+		staff_skill_no,
+		staff_no,
+		skill_code
+		FROM staff_skill
 		WHERE staff_no = #{staffNo}
 	</select>	
 	
@@ -179,7 +207,8 @@
    						 SUBSTR(s.jumin_no,8,1) jumin_no,
    						 s.department_code,
    						 s.school_code,
-   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day
+   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day,
+   						 s.reg_date
    						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
    					 	 WHERE s.school_code = cs.school_code
    					 	 AND   s.department_code = cd.department_code

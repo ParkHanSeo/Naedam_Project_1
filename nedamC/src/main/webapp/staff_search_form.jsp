@@ -8,7 +8,7 @@
 <head>
 <meta charset="EUC-KR">
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
 	
 	<script>
@@ -21,7 +21,7 @@
 			var dateEnd1 = $("input[name='dateEnd1']").val();
 			var dateEnd2 = $("input[name='dateEnd2']").val();
 			var dateEnd3 = $("input[name='dateEnd3']").val();
-			
+
 			
 			
 			if(dateStart1 > dateEnd1){
@@ -45,6 +45,49 @@
 			$("form").attr("method" , "POST").attr("action" , "/staff/listStaff").submit();
 		}
 		
+		// ajax로 테이블을 만들고 이벤트를 시키려니 실행이 되지 않았다.
+		// 페이지가 다 만들어질때까지 데이터가 없어 이에 대한 값이 없으니 못 찾는다고 한다.
+		// 해결방안은 document를 사용하여 현재 DOM 객체에서 찾아 테이블이 나중에 생성되더라도 찾을 수 있다.
+		$(document).on('click', 'button[name="update/delete2"]', function(){
+			var staffNo = $("#staffNo").val();
+			location.href="/staff/getStaff?staffNo="+$("input[name='staffNo']").val();			
+		});
+		
+		$(document).ready(function(){ 
+			var now = new Date(); 
+			var year = now.getFullYear();  
+			var day = (now.getDate()) > 9 ? ''+(now.getDate()) : '0'+(now.getDate()); 
+			//년도 selectbox만들기 
+			for(var i = 1990 ; i <= year ; i++) { 
+				$('#year').append('<option value="' + i + '">' + i + '년</option>'); 
+			} 
+			// 일별 selectbox 만들기 
+			for(var i=1; i <= 31; i++) { 
+				var dd = i > 9 ? i : "0"+i ; 
+				$('#day').append('<option value="' + dd + '">' + dd+ '일</option>'); 
+			} 
+			$("#year > option[value='']").attr("selected", "true"); 
+			$("#day > option[value='']").attr("selected", "true"); 
+		})
+		
+		$(document).ready(function(){ 
+			var now = new Date(); 
+			var year = now.getFullYear();  
+			var day = (now.getDate()) > 9 ? ''+(now.getDate()) : '0'+(now.getDate()); 
+			//년도 selectbox만들기 
+			for(var i = 1990 ; i <= year ; i++) { 
+				$('#year2').append('<option value="' + i + '">' + i + '년</option>'); 
+			} 
+			// 일별 selectbox 만들기 
+			for(var i=1; i <= 31; i++) { 
+				var dd = i > 9 ? i : "0"+i ; 
+				$('#day2').append('<option value="' + dd + '">' + dd+ '일</option>'); 
+			} 
+			$("#year2 > option[value='']").attr("selected", "true");  
+			$("#day2 > option[value='']").attr("selected", "true"); 
+		})		
+
+		
 	
 		$(function(){
 			
@@ -65,22 +108,43 @@
 			});
 			
 			$("button[name='update/delete']").on("click", function(){
-				var staffNo = $("#staffNo").val();
-				location.href="/staff/getStaff?staffNo="+$("input[name='staffNo']").val();
+				location.href="/staff/getStaff?staffNo="+$(this).val().trim();
 			});
 			
+			//정렬
+			//이름순
+			$("#searchSort2").on("click", function(){
+				var searchSort = $("#searchSort2").val();
+				alert(searchSort)
+				fncGetList('1');
+			});
+			//성별
+			$("#searchSort3").on("click", function(){
+				location.href="/staff/allListStaff?searchSort=3"
+			});
+			//부서별
+			$("#searchSort4").on("click", function(){
+				location.href="/staff/allListStaff?searchSort=4"
+			});
+			//졸업일
+			$("#searchSort5").on("click", function(){
+				location.href="/staff/allListStaff?searchSort=5"
+			});			
 												
 			$("button[name='search2']").on("click" , function(){
 				
-				var formData = $("form[name=searchForm]").serialize();
-				
-				console.log(formData);
+				//searchForm에 있는 데이터를 이용하여 검색기능을 활성화 시켜야 하는데 안된다.
+				//console.log에는 데이터가 잘 잡히지만 controller에서 데이터를 가져오지 못한다 이유는 뭘까?
+				var search = $("form[name=searchForm]").serialize();
+				var search2 = JSON.stringify(search);
+				console.log(search);
+				alert(search2);
 				
 				$.ajax({
 					url : "/staff/json/listStaff/" ,
 					type : "POST" ,
-		            data : formData,
-		            dataType : 'json',
+		            data : search,
+		        	dataType : "json",
 					headers : {
 						"Accept" : "application/json",
 						"Content-Type" : "application/json"						
@@ -89,7 +153,7 @@
 					success : function(JSONData){
 						
 						var display = "";
-					
+						//기존의 방식과는 다르게 JSONData에 list를 작성해야 데이터를 불러올 수 있었다.
 						for(var i = 0; i < JSONData.list.length; i++){
 							
 							if(JSONData.list[i].juminNo == 1){
@@ -120,7 +184,7 @@
 									+ '<td align="center">'+JSONData.list[i].codeDepartment.departmentCode+'</td>'
 									+ '<td align="center">'+JSONData.list[i].graduateDay+'</td>'
 									+ '<td align="center">'
-									+ '	<button type="button" name="update/delete" id="update/delete2">수정/삭제</button>'
+									+ '	<button type="button" name="update/delete2" id="update/delete2">수정/삭제</button>'
 									+ '</td>'
 									+ '<input type="hidden" id="staffNo" name="staffNo" value="'+JSONData.list[i].staffNo+'">'
 									+ '</tr>';
@@ -144,23 +208,23 @@
 	<table border="1" width ="1000" height="100" align = "center" >
 		
 		    <tr align ="center" color="gray">
-				<p><td colspan = "6">사원 정보 검색</td></p>
+				<p><td colspan = "6" style="background-color:gray;">사원 정보 검색</td></p>
 		    </tr>
 		<form class="form-inline" name="searchForm" id="searchForm">
 		  <div class="form-group">
 				    <tr align = "center" >
-						<td>
+						<td style="background-color:gray;">
 							이름
 						</td>
 						<td>
 							<input type="text" name="searchName" value="${! empty search.searchName ? search.searchName : ""}" size = "6" maxlength = "6">
 						</td>
-						<td>성별</td>
+						<td style="background-color:gray;">성별</td>
 						<td>
 							<label><input type="checkbox" name="searchGender" value="000000-1111111"> 남</label>
 							<label><input type="checkbox" name="searchGender" value="000000-2222222"> 여</label>
 						</td>
-						<td>부서</td>
+						<td style="background-color:gray;">부서</td>
 						<td align="center">
 							<select name="searchDepartment" style="width:100px" align = "center">
 								<option></option>
@@ -175,13 +239,13 @@
 						</td>
 				    </tr>
 				    <tr align = "center">
-						<td>학력</td>
+						<td style="background-color:gray;">학력</td>
 						<td>
 							<label><input type="checkbox" name="searchEducation" value="1"  ${ ! empty search.searchEducation && search.searchEducation==1 ? "selected" : "" }>고졸</label>
 							<label><input type="checkbox" name="searchEducation" value="2"  ${ ! empty search.searchEducation && search.searchEducation==2 ? "selected" : "" }>전문대졸</label>
 							<label><input type="checkbox" name="searchEducation" value="3"  ${ ! empty search.searchEducation && search.searchEducation==3 ? "selected" : "" }>일반대졸</label>
 						</td>
-						<td>기술</td>
+						<td style="background-color:gray;">기술</td>
 						<td colspan="3">
 							<label><input type="checkbox" id="java"   name="searchSkill" value="1">Java</label>
 							<label><input type="checkbox" id="jsp"    name="searchSkill" value="2">JSP</label>
@@ -191,58 +255,46 @@
 						</td>
 				    </tr>
 				    <tr align = "center">
-						<td>졸업일</td>
+						<td style="background-color:gray;">졸업일</td>
 						<td colspan="5">
 						    <label>
-						     	<input type="text" name="dateStart1" size = "6" maxlength = "6">
+						     	<select name="dateStart1" id="year">
+						     		<option></option>
+						     	</select>
 						      년
 						    </label>
 						    <label>
-						      <select name="dateStart2">
+						      <select name="dateStart2" id="month">
 						      	<option></option>
-						        <option value="01">1</option>
-						        <option value="02">2</option>
-						        <option value="03">3</option>
-						        <option value="04">4</option>
-						        <option value="05">5</option>
-						        <option value="06">6</option>
-						        <option value="07">7</option>
-						        <option value="08">8</option>
-						        <option value="09">9</option>
-						        <option value="10">10</option>
-						        <option value="11">11</option>
-						        <option value="12">12</option>
+						      	<option>02</option>
+						      	<option>08</option>
 						      </select>
 						      월
 						    </label>						    						
 						    <label>
-						     	<input name="dateStart3" size = "6" maxlength = "6">
+						     	<select name="dateStart3" id="day">
+						     		<option></option>
+						     	</select>
 						      일 ~
 						    </label>
 						    <label>
-						     	<input type="text" name="dateEnd1" size = "6" maxlength = "6">
+						    	<select name="dateEnd1" id="year2">
+						    		<option></option>
+						    	</select>
 						      년
 						    </label>
 						    <label>
-						      <select name="dateEnd2">
+						      <select name="dateEnd2" id="month2">
 						      	<option></option>
-						        <option value="01">1</option>
-						        <option value="02">2</option>
-						        <option value="03">3</option>
-						        <option value="04">4</option>
-						        <option value="05">5</option>
-						        <option value="06">6</option>
-						        <option value="07">7</option>
-						        <option value="08">8</option>
-						        <option value="09">9</option>
-						        <option value="10">10</option>
-						        <option value="11">11</option>
-						        <option value="12">12</option>
+						      	<option>02</option>
+						      	<option>08</option>
 						      </select>
 						      월
 						    </label>						    						
 						    <label>
-						     	<input name="dateEnd3" size = "6" maxlength = "6">
+						    	<select name="dateEnd3" id="day2">
+						    		<option></option>
+						    	</select>
 						      일
 						    </label>
 						</td>
@@ -250,7 +302,7 @@
 				    <input type="hidden" id="currentPage" name="currentPage" value="" />
 				    
 		  </div>
-		</form>
+		
 	</table>
 	<div align = "center">
 		<button type="button" name="search" style="width: 90px;">검색</button>
@@ -270,12 +322,12 @@
 	<table border="1" width ="1000" height="20" align = "center" >
 	<div>
 	    <thead>
-	      <tr align = "center">
+	      <tr align = "center" style="background-color:gray;">
 	        <th>번호</th>
-	        <th>이름</th>
-	        <th>성별</th>
-	        <th>부서</th>
-	        <th>졸업일</th>
+	        <th id="searchSort2" name="searchSort" value="2" >이름</th>
+	        <th id="searchSort3" name="searchSort" value="3" >성별</th>
+	        <th id="searchSort4" name="searchSort" value="4" >부서</th>
+	        <th id="searchSort5" name="searchSort" value="5" >졸업일</th>
 	        <th></th>
 	      </tr>
 	    </thead>
@@ -301,13 +353,15 @@
 				  </td>
 				  <td align="center">${staff.graduateDay}</td>
 				  <td align="center">
-				  	<button type="button" name="update/delete">수정/삭제</button>
+				  	<button type="button" name="update/delete" value="${staff.staffNo}" >수정/삭제</button>
 				  </td>
 				</tr>
+				  <!-- list 불러올 때 staffNo 값은 hidden으로 남겨놓았어요! -->
 				  <input type="hidden" id="staffNo" name="staffNo" value="${staff.staffNo}">
 	          </c:forEach>
 	    </tbody>
 	</table>
+	</form>
 </div>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">

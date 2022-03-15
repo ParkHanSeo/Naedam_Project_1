@@ -1,5 +1,6 @@
 package com.model2.mvc.service.staff;
 
+import java.util.List;
 import java.util.Map;
 
 import com.model2.mvc.common.Search;
@@ -21,6 +22,10 @@ public interface StaffService {
 	public Staff getStaff(String juminNo) throws Exception;
 	
 	public Staff getStaff2(int staffNo) throws Exception;
+	
+	public StaffSkill getStaffSkill(int staffNo) throws Exception;
+	
+	public List<StaffSkill> getStaffSkill2(int staffNo) throws Exception;
 
 	public void updateStaff(Staff staff) throws Exception;
 	

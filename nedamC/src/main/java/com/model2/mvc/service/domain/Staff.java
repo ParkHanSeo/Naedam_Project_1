@@ -10,7 +10,10 @@ public class Staff {
 	private CodeSchool codeSchool;
 	private CodeDepartment codeDepartment;
 	private String graduateDay;
+	private String regDate;
 	
+
+
 	public Staff() {};
 	
 	public String getJuminNo() {
@@ -57,12 +60,21 @@ public class Staff {
 	public void setCodeDepartment(CodeDepartment codeDepartment) {
 		this.codeDepartment = codeDepartment;
 	}
+	
+	public String getRegDate() {
+		return regDate;
+	}
+
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}	
 
 	@Override
 	public String toString() {
 		return "StaffVO [staffNo=" + staffNo + ", staffName=" + staffName 
 				+ ", juminNo=" + juminNo + ", graduateDay=" + graduateDay + "]"
-				+ ", codeSchool=" + codeSchool.getSchoolCode() + ",codeDepartment=" + codeDepartment.getDepartmentCode();
+				+ ", codeSchool=" + codeSchool.getSchoolCode() + ",codeDepartment=" + codeDepartment.getDepartmentCode()
+				+ "regDate = "+regDate;
 	}	
 	
 }

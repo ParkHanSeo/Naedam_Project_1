@@ -57,6 +57,14 @@ public class StaffDaoImpl implements StaffDao {
 		return sqlSession.selectOne("StaffMapper.getStaff2", staffNo);
 	}	
 	
+	public StaffSkill getStaffSkill(int staffNo) throws Exception{
+		return sqlSession.selectOne("StaffMapper.getStaffSkill", staffNo);
+	}
+	
+	public List<StaffSkill> getStaffSkill2(int staffNo) throws Exception {
+		return sqlSession.selectList("StaffMapper.getStaffSkill", staffNo);
+	}	
+	
 	public int getTotalCount(Search search) throws Exception {
 		return sqlSession.selectOne("StaffMapper.getTotalCount", search);
 	}
@@ -76,6 +84,13 @@ public class StaffDaoImpl implements StaffDao {
 	public void deleteStaffSkill(int staffNo) throws Exception {
 		sqlSession.delete("StaffMapper.deleteStaffSkill", staffNo);
 	}
+
+
+
+
+
+
+
 
 
 

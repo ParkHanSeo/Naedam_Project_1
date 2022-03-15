@@ -83,7 +83,22 @@
 			$("form[name='addStaff']").attr("method", "POST").attr("action", "/staff/addStaff").submit();
 		}
 		
-	    
+		$(document).ready(function(){ 
+			var now = new Date(); 
+			var year = now.getFullYear();  
+			var day = (now.getDate()) > 9 ? ''+(now.getDate()) : '0'+(now.getDate()); 
+			//년도 selectbox만들기 
+			for(var i = 1990 ; i <= year ; i++) { 
+				$('#year').append('<option value="' + i + '">' + i + '년</option>'); 
+			} 
+			// 일별 selectbox 만들기 
+			for(var i=1; i <= 31; i++) { 
+				var dd = i > 9 ? i : "0"+i ; 
+				$('#day').append('<option value="' + dd + '">' + dd+ '일</option>'); 
+			} 
+			$("#year > option[value='']").attr("selected", "true"); 
+			$("#day > option[value='']").attr("selected", "true"); 
+		})	    
 
 
 	
@@ -109,25 +124,25 @@
 
 	<table border="1" width ="1000" height="100" align = "center" >
 		
-		    <tr align ="center" color="gray">
-				<p><td colspan = "6">사원 정보 검색</td></p>
+		    <tr align ="center" style="background-color:gray;">
+				<p><td colspan = "6">사원 정보 등록</td></p>
 		    </tr>
 		<form class="form-inline" name="addStaff">
 		  <div class="form-group">
 				    <tr align = "center" >
-						<td>
+						<td style="background-color:gray;">
 							이름
 						</td>
 						<td>
 							<input type="text" name="staffName" id="staffName" value="${! empty staffName ? staffName : ""}" size = "6" maxlength = "6">
 						</td>
-						<td>주민번호</td>
+						<td style="background-color:gray;">주민번호</td>
 						<td>
 							<label><input type="text" name="searchGender" id="searchGender" ></label>
 							-
 							<label><input type="text" name="searchGender2"id="searchGender2" ></label>
 						</td>
-						<td>부서</td>
+						<td style="background-color:gray;">부서</td>
 						<td align="center">
 							<select name="codeDepartment.departmentCode" id="codeDepartment" style="width:100px" align="center">
 								<option></option>
@@ -142,13 +157,13 @@
 						</td>
 				    </tr>
 				    <tr align = "center">
-						<td>학력</td>
+						<td style="background-color:gray;">학력</td>
 						<td>
 							<input type="checkbox" name="codeSchool.schoolCode" value="1" >고졸
 							<input type="checkbox" name="codeSchool.schoolCode" value="2" >전문대졸
 							<input type="checkbox" name="codeSchool.schoolCode" value="3" >일반대졸
 						</td>
-						<td>기술</td>
+						<td style="background-color:gray;">기술</td>
 						<td colspan="3">
 							<label><input type="checkbox" name="skillCode" value="1">Java</label>
 							<label><input type="checkbox" name="skillCode" value="2">JSP</label>
@@ -158,35 +173,28 @@
 						</td>
 				    </tr>
 				    <tr align = "center">
-						<td>졸업일</td>
+						<td style="background-color:gray;">졸업일</td>
 						<td colspan="5">
-						    <label>
-						     	<input type="text" name="dateStart1" id="dateStart1" size = "6" maxlength = "6">
+   						    <label>
+					     	<select name="dateStart1" id="year">
+					     		<option></option>
+					     	</select>
 						      년
 						    </label>
 						    <label>
-						      <select name="dateStart2" id="dateStart2">
+						      <select name="dateStart2" id="month">
 						      	<option></option>
-						        <option value="01">1</option>
-						        <option value="02">2</option>
-						        <option value="03">3</option>
-						        <option value="04">4</option>
-						        <option value="05">5</option>
-						        <option value="06">6</option>
-						        <option value="07">7</option>
-						        <option value="08">8</option>
-						        <option value="09">9</option>
-						        <option value="10">10</option>
-						        <option value="11">11</option>
-						        <option value="12">12</option>
+						      	<option>02</option>
+						      	<option>08</option>
 						      </select>
 						      월
 						    </label>						    						
 						    <label>
-						     	<input name="dateStart3" id="dateStart3" size = "6" maxlength = "6">
-						      일
+						     	<select name="dateStart3" id="day">
+						     		<option></option>
+						     	</select>
+						      일 ~
 						    </label>
-						    
 						</td>
 				    </tr>
 		  </div>

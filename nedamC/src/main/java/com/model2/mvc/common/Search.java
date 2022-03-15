@@ -19,6 +19,7 @@ public class Search {
 	private String[] searchSkill;
 	private String searchGraduateStart;
 	private String searchGraduateEnd;
+	private String searchSort;
 	
 	private String dateStart1;
 	private String dateStart2;
@@ -193,6 +194,14 @@ public class Search {
 		this.dateEnd3 = dateEnd3;
 	}
 
+	public String getSearchSort() {
+		return searchSort;
+	}
+
+	public void setSearchSort(String searchSort) {
+		this.searchSort = searchSort;
+	}
+
 	public void setEndRowNum(int endRowNum) {
 		this.endRowNum = endRowNum;
 	}
@@ -207,6 +216,6 @@ public class Search {
 				+ ", pageSize=" + pageSize + ", endRowNum=" + endRowNum
 				+ ", startRowNum=" + startRowNum + ", dateStart1=" +dateStart1 
 				+ ", dateStart2=" + dateStart2 + ", dateStart3=" +dateStart3 + ", dateEnd1=" + dateEnd1 
-				+ ", dateEnd2= " + dateEnd2 + ", dateEnd3=" + dateEnd3 + "]";
+				+ ", dateEnd2= " + dateEnd2 + ", dateEnd3=" + dateEnd3 + ", searchSort=" + searchSort +"]";
 	}
 }

@@ -26,6 +26,10 @@ public interface StaffDao {
 	
 	public Staff getStaff2(int staffNo) throws Exception;
 	
+	public StaffSkill getStaffSkill(int staffNo) throws Exception;
+	
+	public List<StaffSkill> getStaffSkill2(int staffNo) throws Exception;
+	
 	public int getTotalCount(Search search) throws Exception;
 	
 	public void updateStaff(Staff staff) throws Exception;
