@@ -41,8 +41,20 @@
 				}
 			}
 			
-			$("#currentPage").val(currentPage);
-			$("form").attr("method" , "POST").attr("action" , "/staff/listStaff").submit();
+			
+			
+			if($('input:radio[id="searchOr"]').is(":checked") == true){
+				$("#currentPage").val(currentPage);
+				$("form").attr("method" , "POST").attr("action" , "/staff/listStaff2").submit();
+			}else if($('input:radio[id="searchAnd"]').is(":checked") == true){
+				$("#currentPage").val(currentPage);
+				$("form").attr("method" , "POST").attr("action" , "/staff/listStaff").submit();
+			}else if($('input:radio[id="searchOr"]').is(":checked") == false && $('input:radio[id="searchAnd"]').is(":checked") == false ){
+				$("#currentPage").val(currentPage);
+				$("form").attr("method" , "POST").attr("action" , "/staff/listStaff").submit();
+			}
+			
+			
 		}
 		
 		// ajax로 테이블을 만들고 이벤트를 시키려니 실행이 되지 않았다.
@@ -92,7 +104,7 @@
 		$(function(){
 			
 			$("button[name='allSearch']").on("click" , function(){
-				location.href="/staff/allListStaff"
+				location.href="/staff/listStaff"
 			});
 
 			$("button[name='reset']").on("click" , function(){
@@ -103,10 +115,6 @@
 				fncGetList('1');
 			});
 			
-			$("button[name='input']").on("click" , function(){
-				location.href="/staff_input_form.jsp"
-			});
-			
 			$("button[name='update/delete']").on("click", function(){
 				location.href="/staff/getStaff?staffNo="+$(this).val().trim();
 			});
@@ -114,21 +122,19 @@
 			//정렬
 			//이름순
 			$("#searchSort2").on("click", function(){
-				var searchSort = $("#searchSort2").val();
-				alert(searchSort)
-				fncGetList('1');
+				location.href="/staff/listStaff?searchSort=2"
 			});
 			//성별
 			$("#searchSort3").on("click", function(){
-				location.href="/staff/allListStaff?searchSort=3"
+				location.href="/staff/listStaff?searchSort=3"
 			});
 			//부서별
 			$("#searchSort4").on("click", function(){
-				location.href="/staff/allListStaff?searchSort=4"
+				location.href="/staff/listStaff?searchSort=4"
 			});
 			//졸업일
 			$("#searchSort5").on("click", function(){
-				location.href="/staff/allListStaff?searchSort=5"
+				location.href="/staff/listStaff?searchSort=5"
 			});			
 												
 			$("button[name='search2']").on("click" , function(){
@@ -199,6 +205,9 @@
 			});			
 			
 		})
+		
+		function showPopup() { window.open("/staff_input_form.jsp", "a", "width=1200, height=500, left=100, top=50"); }
+		
 	</script>
 	
 </head>
@@ -221,8 +230,8 @@
 						</td>
 						<td style="background-color:gray;">성별</td>
 						<td>
-							<label><input type="checkbox" name="searchGender" value="000000-1111111"> 남</label>
-							<label><input type="checkbox" name="searchGender" value="000000-2222222"> 여</label>
+							<label><input type="checkbox" name="searchGender" value="000000-1111111" ${search.searchGender eq '000000-1111111' ? 'CHECKED' : '' } > 남</label>
+							<label><input type="checkbox" name="searchGender" value="000000-2222222" ${search.searchGender eq '000000-2222222' ? 'CHECKED' : '' }> 여</label>
 						</td>
 						<td style="background-color:gray;">부서</td>
 						<td align="center">
@@ -241,9 +250,9 @@
 				    <tr align = "center">
 						<td style="background-color:gray;">학력</td>
 						<td>
-							<label><input type="checkbox" name="searchEducation" value="1"  ${ ! empty search.searchEducation && search.searchEducation==1 ? "selected" : "" }>고졸</label>
-							<label><input type="checkbox" name="searchEducation" value="2"  ${ ! empty search.searchEducation && search.searchEducation==2 ? "selected" : "" }>전문대졸</label>
-							<label><input type="checkbox" name="searchEducation" value="3"  ${ ! empty search.searchEducation && search.searchEducation==3 ? "selected" : "" }>일반대졸</label>
+							<label><input type="checkbox" name="searchEducation" value="1"  ${search.searchEducation eq '1' ? "CHECKED" : ""}>고졸</label>
+							<label><input type="checkbox" name="searchEducation" value="2"  ${search.searchEducation eq '2' ? "CHECKED" : ""}>전문대졸</label>
+							<label><input type="checkbox" name="searchEducation" value="3"  ${search.searchEducation eq '3' ? "CHECKED" : ""}>일반대졸</label>
 						</td>
 						<td style="background-color:gray;">기술</td>
 						<td colspan="3">
@@ -259,13 +268,13 @@
 						<td colspan="5">
 						    <label>
 						     	<select name="dateStart1" id="year">
-						     		<option></option>
+						     		<option>${search.dateStart1}</option>
 						     	</select>
 						      년
 						    </label>
 						    <label>
 						      <select name="dateStart2" id="month">
-						      	<option></option>
+						      	<option>${search.dateStart2}</option>
 						      	<option>02</option>
 						      	<option>08</option>
 						      </select>
@@ -273,19 +282,19 @@
 						    </label>						    						
 						    <label>
 						     	<select name="dateStart3" id="day">
-						     		<option></option>
+						     		<option>${search.dateStart3}</option>
 						     	</select>
 						      일 ~
 						    </label>
 						    <label>
 						    	<select name="dateEnd1" id="year2">
-						    		<option></option>
+						    		<option>${search.dateEnd1}</option>
 						    	</select>
 						      년
 						    </label>
 						    <label>
 						      <select name="dateEnd2" id="month2">
-						      	<option></option>
+						      	<option>${search.dateEnd2}</option>
 						      	<option>02</option>
 						      	<option>08</option>
 						      </select>
@@ -293,11 +302,18 @@
 						    </label>						    						
 						    <label>
 						    	<select name="dateEnd3" id="day2">
-						    		<option></option>
+						    		<option>${search.dateEnd3}</option>
 						    	</select>
 						      일
 						    </label>
 						</td>
+				    </tr>
+				    <tr align = "center">
+				    	<td style="background-color:gray;">상세검색</td>
+				    	<td colspan="3">
+				    		 <input type="radio" name="searchCheack" id="searchOr" value="1" ${search.searchCheack eq '1' ? "CHECKED" : ""} >or
+				    		 <input type="radio" name="searchCheack" id="searchAnd" value="2" ${search.searchCheack eq '2' ? "CHECKED" : ""} >and
+				    	</td>
 				    </tr>
 				    <input type="hidden" id="currentPage" name="currentPage" value="" />
 				    
@@ -308,16 +324,10 @@
 		<button type="button" name="search" style="width: 90px;">검색</button>
 		<button type="button" name="allSearch" style="width: 90px;">전부검색</button>
 		<button type="button" name="reset"  style="width: 90px;">초기화</button>
-		<button type="button" name="input" style="width: 90px;">등록</button>
+		<button type="button" name="input" style="width: 90px;" onclick="showPopup();">등록</button>
 	    <div>
 	   		검색건수 -> ${resultPage.totalCount}건
 	   	</div>
-	</div>
-	<div align = "center">
-		<button type="button" name="search2" style="width: 90px;">검색2</button>
-		<button type="button" name="allSearch2" style="width: 90px;">전부검색2</button>
-		<button type="button" name="reset2"  style="width: 90px;">초기화2</button>
-		<button type="button" name="input2" style="width: 90px;">등록2</button>		
 	</div>
 	<table border="1" width ="1000" height="20" align = "center" >
 	<div>
@@ -359,6 +369,7 @@
 				  <!-- list 불러올 때 staffNo 값은 hidden으로 남겨놓았어요! -->
 				  <input type="hidden" id="staffNo" name="staffNo" value="${staff.staffNo}">
 	          </c:forEach>
+	          <input type="hidden" id="searchSort" name="searchSort" value="${search.searchSort}">
 	    </tbody>
 	</table>
 	</form>

@@ -29,7 +29,7 @@
 			$("input[name=skillCode]:checked").each(function(){
 				skillCode.push($(this).val());
 			});
-			alert(skillCode);
+			
 			
 			
 			if(staffName == null || staffName == ""){
@@ -81,6 +81,7 @@
 			
 
 			$("form[name='addStaff']").attr("method", "POST").attr("action", "/staff/addStaff").submit();
+			self.close();
 		}
 		
 		$(document).ready(function(){ 
@@ -116,6 +117,8 @@
 			
 			
 		})
+		
+		
 	</script>
 	
 </head>

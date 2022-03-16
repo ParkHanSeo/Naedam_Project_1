@@ -16,7 +16,7 @@ public interface StaffDao {
 	// SELECT LIST
 	public List<Staff> getStaffList(Search search) throws Exception;
 	
-	public List<Staff> getAllStaffList(Search search) throws Exception;
+	public List<Staff> getStaffList2(Search search) throws Exception;
 	
 	public int addStaff(Staff staff) throws Exception;
 
@@ -31,6 +31,8 @@ public interface StaffDao {
 	public List<StaffSkill> getStaffSkill2(int staffNo) throws Exception;
 	
 	public int getTotalCount(Search search) throws Exception;
+	
+	public int getTotalCount2(Search search) throws Exception;
 	
 	public void updateStaff(Staff staff) throws Exception;
 	

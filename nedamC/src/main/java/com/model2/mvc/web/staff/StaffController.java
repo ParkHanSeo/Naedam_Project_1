@@ -85,27 +85,34 @@ public class StaffController {
 		
 		System.out.println("이거 확인해야함 ::: "+search.getSearchSort());
 		System.out.println("페이지 확인 ::: "+search.getCurrentPage());
+		System.out.println("성별 확인 ::: "+search.getSearchGender());
+		System.out.println("이것도 확인 ::: "+search.getSearchCheack());
 		
+		//페이지 처리
 		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
 		}
-
+		search.setPageSize(pageSize);
+		//졸업일 검색 시작일자
 		if(search.getDateStart1() != null && search.getDateStart2() != null && search.getDateStart3() != null &&
 		   search.getDateStart1() != "" && search.getDateStart2() != "" && search.getDateStart3() != "") {
 			search.setSearchGraduateStart(search.getDateStart1()+"-"+search.getDateStart2()+"-"+search.getDateStart3());
 		}
+		//졸업일 검색 종료일자
 		if(search.getDateEnd1() != null && search.getDateEnd2() != null && search.getDateEnd3() != null &&
 		   search.getDateEnd1() != "" && search.getDateEnd2() != "" && search.getDateEnd3() != "") {
 			search.setSearchGraduateEnd(search.getDateEnd1()+"-"+search.getDateEnd2()+"-"+search.getDateEnd3());
 		}		
+		System.out.println(search.getSearchGraduateStart());
+		System.out.println(search.getSearchGraduateEnd());
 
-		search.setPageSize(pageSize);
-				
+		//map으로 조건에 맞는 list를 불러온다.
 		Map<String, Object> map = staffService.getStaffList(search);
 		
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		System.out.println(resultPage);
-		
+				
+		//model.addAttribute로 불러온 값들을 넘겨준다.
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("resultPage", resultPage);
 		model.addAttribute("search", search);		
@@ -113,25 +120,42 @@ public class StaffController {
 		return "forward:/staff_search_form.jsp";
 	}
 	
-	@RequestMapping( value="allListStaff")
-	public String allListStaff(@ModelAttribute("search") Search search, 
+	@RequestMapping( value="listStaff2")
+	public String listStaff2(@ModelAttribute("search") Search search, 
 							Model model) throws Exception {
 		
-		System.out.println("/allListStaff Start");
+		System.out.println("/listStaff2 Start");
 		
-		System.out.println("이거 확인해야 함 ::: "+search.getSearchSort());
+		System.out.println("이거 확인해야함 ::: "+search.getSearchSort());
 		System.out.println("페이지 확인 ::: "+search.getCurrentPage());
-		if(search.getCurrentPage() == 0 ){
+		System.out.println("성별 확인 ::: "+search.getSearchGender());
+		System.out.println("이것도 확인 ::: "+search.getSearchCheack());
+		//페이지 처리
+		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
 		}
-		
 		search.setPageSize(pageSize);
+		//졸업일 검색 시작일자
+		if(search.getDateStart1() != null && search.getDateStart2() != null && search.getDateStart3() != null &&
+		   search.getDateStart1() != "" && search.getDateStart2() != "" && search.getDateStart3() != "") {
+			search.setSearchGraduateStart(search.getDateStart1()+"-"+search.getDateStart2()+"-"+search.getDateStart3());
+		}
+		//졸업일 검색 종료일자
+		if(search.getDateEnd1() != null && search.getDateEnd2() != null && search.getDateEnd3() != null &&
+		   search.getDateEnd1() != "" && search.getDateEnd2() != "" && search.getDateEnd3() != "") {
+			search.setSearchGraduateEnd(search.getDateEnd1()+"-"+search.getDateEnd2()+"-"+search.getDateEnd3());
+		}		
+
+		//map으로 조건에 맞는 list를 불러온다.
+		Map<String, Object> map = staffService.getStaffList2(search);
 		
-		Map<String, Object> map = staffService.getAllStaffList(search);
+		System.out.println("맵 한번 확인 ::: "+map);
+		System.out.println("맵 한번 확인 ::: "+map.size());
 		
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		System.out.println(resultPage);
-		
+				
+		//model.addAttribute로 불러온 값들을 넘겨준다.
 		model.addAttribute("list", map.get("list"));
 		model.addAttribute("resultPage", resultPage);
 		model.addAttribute("search", search);		

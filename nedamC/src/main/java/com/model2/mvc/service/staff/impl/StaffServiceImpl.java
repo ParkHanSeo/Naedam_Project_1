@@ -44,17 +44,16 @@ public class StaffServiceImpl implements StaffService {
 		return map;
 	}
 	
-	@Override
-	public Map<String, Object> getAllStaffList(Search search) throws Exception {
-		List<Staff> list = staffDao.getAllStaffList(search);
-		int totalCount = staffDao.getTotalCount(search);
+	public Map<String, Object> getStaffList2(Search search) throws Exception {
+		List<Staff> list = staffDao.getStaffList2(search);
+		int totalCount = staffDao.getTotalCount2(search);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("list", list);
 		map.put("totalCount", new Integer(totalCount));
 		
 		return map;
-	}
+	}	
 	
 	@Override
 	public int addStaff(Staff staff) throws Exception {

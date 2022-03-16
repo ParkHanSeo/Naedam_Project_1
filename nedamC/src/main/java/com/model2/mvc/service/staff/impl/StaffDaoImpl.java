@@ -35,9 +35,9 @@ public class StaffDaoImpl implements StaffDao {
 	}
 	
 	@Override
-	public List<Staff> getAllStaffList(Search search) throws Exception {
-		return sqlSession.selectList("StaffMapper.getAllStaffList", search);
-	}
+	public List<Staff> getStaffList2(Search search) throws Exception {
+		return sqlSession.selectList("StaffMapper.getStaffList2", search);
+	}	
 	
 	@Override
 	public int addStaff(Staff staff) throws Exception {
@@ -68,6 +68,10 @@ public class StaffDaoImpl implements StaffDao {
 	public int getTotalCount(Search search) throws Exception {
 		return sqlSession.selectOne("StaffMapper.getTotalCount", search);
 	}
+	
+	public int getTotalCount2(Search search) throws Exception {
+		return sqlSession.selectOne("StaffMapper.getTotalCount2", search);
+	}	
 
 	public void updateStaff(Staff staff) throws Exception {
 		sqlSession.update("StaffMapper.updateStaff", staff);

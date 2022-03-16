@@ -13,7 +13,7 @@ public interface StaffService {
 
 	public Map<String , Object> getStaffList(Search search) throws Exception;
 	
-	public Map<String , Object> getAllStaffList(Search search) throws Exception;
+	public Map<String , Object> getStaffList2(Search search) throws Exception;
 	
 	public int addStaff(Staff staff) throws Exception;
 	

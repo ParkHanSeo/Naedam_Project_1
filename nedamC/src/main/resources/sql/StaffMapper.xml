@@ -87,13 +87,27 @@
 												<if test="searchGender != '' and searchGender != null ">
 													AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
 												</if>															
-											ORDER BY s.reg_date DESC ) inner_table
+												 <if test="searchSort != '' and searchSort != null and searchSort == 1 ">
+												 	ORDER BY s.reg_date DESC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 2 ">
+												 	ORDER BY s.staff_name ASC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 3 ">
+												 	ORDER BY jumin_no ASC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 4 ">
+												 	ORDER BY s.department_code DESC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 5 ">
+												 	ORDER BY graduate_day DESC
+												 </if> ) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
 	
 	</select>
 	
-	<select id="getAllStaffList" parameterType="search" resultMap="staffSelectMap">
+	<select id="getStaffList2" parameterType="search" resultMap="staffSelectMap">
 	
 		SELECT *
 		FROM ( SELECT inner_table.* , ROWNUM AS row_seq
@@ -109,26 +123,80 @@
 					   					 	 WHERE s.school_code = cs.school_code
 					   					 	 AND   s.department_code = cd.department_code
 					   					 	 AND   s.staff_no = ss.staff_no
-					   					 	 AND   ss.skill_code = ck.skill_code		   					 	 
-											 <if test="searchSort != '' and searchSort != null and searchSort == 1 ">
-											 	ORDER BY s.reg_date DESC
-											 </if>
-											 <if test="searchSort != '' and searchSort != null and searchSort == 2 ">
-											 	ORDER BY s.staff_name ASC
-											 </if>
-											 <if test="searchSort != '' and searchSort != null and searchSort == 3 ">
-											 	ORDER BY jumin_no ASC
-											 </if>
-											 <if test="searchSort != '' and searchSort != null and searchSort == 4 ">
-											 	ORDER BY s.department_code DESC
-											 </if>
-											 <if test="searchSort != '' and searchSort != null and searchSort == 5 ">
-											 	ORDER BY graduate_day DESC
-											 </if> ) inner_table
+					   					 	 AND   ss.skill_code = ck.skill_code
+												<if test="searchName !='' and searchName != null ">
+										 			AND (s.staff_name like '%'||#{searchName}||'%')
+												</if>	
+												<if test="searchName !='' and searchName != null ">
+										 			<if test="searchDepartment != '' and searchDepartment != null">
+														OR s.department_code = #{searchDepartment}
+													</if>
+												</if>
+												<if test="searchName =='' or searchName == null ">
+										 			<if test="searchDepartment != '' and searchDepartment != null">
+														AND s.department_code = #{searchDepartment}
+													</if>
+												</if>
+												<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) ">
+													<if test="searchEducation != '' and searchEducation != null ">
+														OR s.school_code = #{searchEducation}
+													</if>
+												</if>
+												<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) ">
+													<if test="searchEducation != '' and searchEducation != null ">
+														AND s.school_code = #{searchEducation}
+													</if>
+												</if>
+												<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) ">
+													<if test="searchSkill != '' and searchSkill != null ">
+														OR ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+													</if>
+												</if>
+												<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation != '' or searchEducation != null)">
+													<if test="searchSkill != '' and searchSkill != null ">
+														AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+													</if>
+												</if>
+												<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) or (searchSkill != '' and searchSkill != null) ">
+													<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+														OR graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+													</if>
+												</if>
+												<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation == '' or searchEducation == null) and (searchSkill == '' or searchSkill == null)">
+													<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+														AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+													</if>
+												</if>
+												<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) or (searchSkill != '' and searchSkill != null) or (searchGraduateStart != '' and searchGraduateStart != null) and (searchGraduateEnd != '' and searchGraduateEnd != null) ">
+													<if test="searchGender != '' and searchGender != null ">
+														OR SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+													</if>
+												</if>
+												<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation == '' or searchEducation == null) and (searchSkill == '' or searchSkill == null) and (searchGraduateStart == '' or searchGraduateStart == null) and (searchGraduateEnd == '' or searchGraduateEnd == null)">
+													<if test="searchGender != '' and searchGender != null ">
+														AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+													</if>
+												</if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 1 ">
+												 	ORDER BY s.reg_date DESC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 2 ">
+												 	ORDER BY s.staff_name ASC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 3 ">
+												 	ORDER BY jumin_no ASC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 4 ">
+												 	ORDER BY s.department_code DESC
+												 </if>
+												 <if test="searchSort != '' and searchSort != null and searchSort == 5 ">
+												 	ORDER BY graduate_day DESC
+												 </if> ) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
 	
 	</select>	
+		
 	
 	
 	
@@ -234,6 +302,77 @@
 							</if>
 					) countTable						
 	 </select>	
+	 
+	<select  id="getTotalCount2"  parameterType="search"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	SELECT   DISTINCT
+	  					 s.staff_no,
+   						 s.staff_name,
+   						 SUBSTR(s.jumin_no,8,1) jumin_no,
+   						 s.department_code,
+   						 s.school_code,
+   						 TO_CHAR(s.graduate_day,'YYYY-MM') graduate_day,
+   						 s.reg_date
+   						 FROM staff s, code_department cd, code_school cs, code_skill ck, staff_skill ss
+   					 	 WHERE s.school_code = cs.school_code
+   					 	 AND   s.department_code = cd.department_code
+   					 	 AND   s.staff_no = ss.staff_no
+   					 	 AND   ss.skill_code = ck.skill_code
+							<if test="searchName !='' and searchName != null ">
+					 			AND (s.staff_name like '%'||#{searchName}||'%')
+							</if>	
+							<if test="searchName !='' and searchName != null ">
+					 			<if test="searchDepartment != '' and searchDepartment != null">
+									OR s.department_code = #{searchDepartment}
+								</if>
+							</if>
+							<if test="searchName =='' or searchName == null ">
+					 			<if test="searchDepartment != '' and searchDepartment != null">
+									AND s.department_code = #{searchDepartment}
+								</if>
+							</if>
+							<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) ">
+								<if test="searchEducation != '' and searchEducation != null ">
+									OR s.school_code = #{searchEducation}
+								</if>
+							</if>
+							<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) ">
+								<if test="searchEducation != '' and searchEducation != null ">
+									AND s.school_code = #{searchEducation}
+								</if>
+							</if>
+							<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) ">
+								<if test="searchSkill != '' and searchSkill != null ">
+									OR ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+								</if>
+							</if>
+							<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation != '' or searchEducation != null)">
+								<if test="searchSkill != '' and searchSkill != null ">
+									AND ck.skill_code in <foreach item="searchSkill" collection="searchSkill" open="(" close=")" separator="," > #{searchSkill} </foreach> 
+								</if>
+							</if>
+							<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) or (searchSkill != '' and searchSkill != null) ">
+								<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+									OR graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+								</if>
+							</if>
+							<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation == '' or searchEducation == null) and (searchSkill == '' or searchSkill == null)">
+								<if test="searchGraduateStart != '' and searchGraduateStart != null and searchGraduateEnd != '' and searchGraduateEnd != null">
+									AND graduate_day BETWEEN #{searchGraduateStart} AND #{searchGraduateEnd}
+								</if>
+							</if>
+							<if test="(searchName !='' and searchName != null) or (searchDepartment != '' and searchDepartment != null) or (searchEducation != '' and searchEducation != null) or (searchSkill != '' and searchSkill != null) or (searchGraduateStart != '' and searchGraduateStart != null) and (searchGraduateEnd != '' and searchGraduateEnd != null) ">
+								<if test="searchGender != '' and searchGender != null ">
+									OR SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+								</if>
+							</if>
+							<if test="(searchName =='' or searchName == null) and (searchDepartment == '' or searchDepartment == null) and (searchEducation == '' or searchEducation == null) and (searchSkill == '' or searchSkill == null) and (searchGraduateStart == '' or searchGraduateStart == null) and (searchGraduateEnd == '' or searchGraduateEnd == null)">
+								<if test="searchGender != '' and searchGender != null ">
+									AND SUBSTR(s.jumin_no,8,1) = SUBSTR(#{searchGender},8,1)
+								</if>
+							</if>
+					) countTable						
+	 </select>	 
 	  
 	
 </mapper>
