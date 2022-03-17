@@ -12,7 +12,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
 	
 	<script>
-		
+		// 동기처리 방법
 		function fncAddStaff(){
 			
 			var staffName = $("#staffName").val();
@@ -81,7 +81,7 @@
 			
 
 			$("form[name='addStaff']").attr("method", "POST").attr("action", "/staff/addStaff").submit();
-			self.close();
+			
 		}
 		
 		$(document).ready(function(){ 
@@ -106,10 +106,76 @@
 		$(function(){
 			
 			
-			
+			// 비동기처리 동기처리를 하여 팝업창을 종료하려고 하면 데이터가 전송이 안 되는 상황이 있었다.
+			// 비동기식으로 처리하면 데이터를 전송하며 팝업창도 종료할 수 있다.
 			$("button[name='input']").on("click" , function(){			
-				fncAddStaff();
+				
+				var staffName = $("#staffName").val();
+				var searchGender = $("#searchGender").val();
+				var searchGender2 = $("#searchGender2").val();
+				var codeDepartment = $("#codeDepartment").val();
+				var codeSchool = $('input:checkbox[name="codeSchool.schoolCode"]').val();
+				
+				var dateStart1 = $("#dateStart1").val();
+				var dateStart2 = $("#dateStart2").val();
+				var dateStart3 = $("#dateStart3").val();
+				
+				var addStaff = $("form[name=addStaff]").serialize();
+				
+				var skillCode = [];
+				$("input[name=skillCode]:checked").each(function(){
+					skillCode.push($(this).val());
+				});
+				
+				if(staffName == null || staffName == ""){
+					alert("이름을 입력해주세요.")
+					return;
+				}
+				
+				if(searchGender == "" || searchGender == null && searchGender2 == "" || searchGender2 == null) { 
+		              alert("주민등록번호 13자리를 적어주세요."); 
+		              return; 
+		      	}
+			    
+			    if (searchGender.length != 6) { 
+		              alert("주민등록번호 앞자리를 다시 입력하세요."); 
+		              return; 
+		      	}		    		
+
+			    if (searchGender2.length != 7) { 
+		              alert("주민등록번호 뒷자리를 다시 입력하세요."); 
+		              return; 
+		      	}		 
+			    
+				if(codeDepartment == null || codeDepartment == ""){
+					alert("부서를 선택해주세요.")
+					return;
+				}
+				if(codeSchool == null || codeSchool == ""){
+					alert("학력을 선택해주세요.")
+					return;
+				}
+				if(skillCode == null || skillCode == ""){
+					alert("하나 이상의 스킬을 선택해주세요.")
+					return;
+				}
+							
+				
+				$.ajax({
+	  			 	 url : "/staff/json/addStaff/",
+		  		  	 type : "POST",
+		  		  	 data : addStaff,
+	  		  	 	 dataType : "json",
+	    		 	 success : function(JSONData, status){
+	  		  	 	 } 	 	 
+		  		});
+				alert("등록이 완료되었습니다.");
+				opener.document.location.reload();
+				self.close();
+				
 			});
+			
+			
 
 			$("button[name='reset']").on("click" , function(){
 				location.href="/staff_input_form.jsp"
@@ -117,6 +183,8 @@
 			
 			
 		})
+				
+			
 		
 		
 	</script>

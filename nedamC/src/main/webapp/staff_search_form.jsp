@@ -115,8 +115,13 @@
 				fncGetList('1');
 			});
 			
+			$("button[name='input']").on("click" , function(){
+				window.open("/staff_input_form.jsp", "a", "width=1200, height=500, left=100, top=50");
+			});
+			
 			$("button[name='update/delete']").on("click", function(){
-				location.href="/staff/getStaff?staffNo="+$(this).val().trim();
+				//location.href="/staff/getStaff?staffNo="+$(this).val().trim();
+				window.open("/staff/getStaff?staffNo="+$(this).val(), "a", "width=1200, height=500, left=100, top=50");
 			});
 			
 			//Á¤·Ä
@@ -205,8 +210,6 @@
 			});			
 			
 		})
-		
-		function showPopup() { window.open("/staff_input_form.jsp", "a", "width=1200, height=500, left=100, top=50"); }
 		
 	</script>
 	

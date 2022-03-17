@@ -38,6 +38,7 @@ public class StaffController {
 	@Value("#{commonProperties['pageSize']}")
 	int pageSize;	
 	
+	//staff 등록
 	@RequestMapping(value="addStaff", method=RequestMethod.POST)
 	public String addStaff(@ModelAttribute("staff") Staff staff,
 						   @RequestParam("searchGender") String searchGender,
@@ -51,15 +52,18 @@ public class StaffController {
 		System.out.println("/addStaff Start");
 		
 		System.out.println("확인 ::: "+skillCode);
+		
 		//staffAdd start
+		//searchGender와 searchGender2 입력 정보를 가져와 setJuminNo에 담기
 		if(searchGender != null && searchGender != null && searchGender2 != "" && searchGender2 != "" ) {
 			staff.setJuminNo(searchGender+"-"+searchGender2);
-		}		
-		staff.setGraduateDay(dateStart1+"-"+dateStart2+"-"+dateStart3);	
+		}
+		staff.setGraduateDay(dateStart1+"-"+dateStart2+"-"+dateStart3);
+		//가져온 데이터를 통하여 addStaff 실행
 		staffService.addStaff(staff);
 		//staffAdd end		
 		
-		
+		//스킬 코드가 1개 이상으로 들어올 때 연속적으로 메소드를 실행시키기 위한 장치
 		for(int i = 0; i <= skillCode.length; i++) {
 			staffSkill.setStaffNo(staffService.getStaff(searchGender+"-"+searchGender2).getStaffNo());
 			int skillCodeArr = skillCode[i];
@@ -72,7 +76,7 @@ public class StaffController {
 			
 		}
 		
-		System.out.println("완료");
+		System.out.println("addStaff 완료");
 		
 		return "redirect:/staff_search_form.jsp";
 	}
@@ -82,11 +86,6 @@ public class StaffController {
 							Model model) throws Exception {
 		
 		System.out.println("/listStaff Start");
-		
-		System.out.println("이거 확인해야함 ::: "+search.getSearchSort());
-		System.out.println("페이지 확인 ::: "+search.getCurrentPage());
-		System.out.println("성별 확인 ::: "+search.getSearchGender());
-		System.out.println("이것도 확인 ::: "+search.getSearchCheack());
 		
 		//페이지 처리
 		if(search.getCurrentPage() ==0 ){
@@ -126,10 +125,6 @@ public class StaffController {
 		
 		System.out.println("/listStaff2 Start");
 		
-		System.out.println("이거 확인해야함 ::: "+search.getSearchSort());
-		System.out.println("페이지 확인 ::: "+search.getCurrentPage());
-		System.out.println("성별 확인 ::: "+search.getSearchGender());
-		System.out.println("이것도 확인 ::: "+search.getSearchCheack());
 		//페이지 처리
 		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
@@ -163,6 +158,7 @@ public class StaffController {
 		return "forward:/staff_search_form.jsp";
 	}	
 	
+	//staff의 정보를 수정하기위한 메소드
 	@RequestMapping(value="updateStaff", method=RequestMethod.POST)
 	public String updateStaff(@ModelAttribute("staff") Staff staff,
 							  @RequestParam("searchGender") String searchGender,
@@ -176,15 +172,21 @@ public class StaffController {
 		System.out.println("/updateStaff Start");
 		
 		Search search = new Search();
+		
+		//requestParam으로 들어온 gender값을 jumin에 set하여 담기
 		if(searchGender != null && searchGender != null && searchGender2 != "" && searchGender2 != "" ) {
 			staff.setJuminNo(searchGender+"-"+searchGender2);
 		}
+		//requestParam으로 들어온 date의 값을 set하여 담기
 		staff.setGraduateDay(dateStart1+"-"+dateStart2+"-"+dateStart3);
 		
+		//가져온 데이터로 updateStaff 실행
 		staffService.updateStaff(staff);
 		
+		//skillCode를 insert 위하여 삭제 한 뒤에
 		staffService.deleteStaffSkill(staffService.getStaff(searchGender+"-"+searchGender2).getStaffNo());
 		
+		//skillCode를 다시 insert하는 장치
 		for(int i = 0; i <= skillCode.length; i++) {
 			staffSkill.setStaffNo(staffService.getStaff(searchGender+"-"+searchGender2).getStaffNo());
 			int skillCodeArr = skillCode[i];
@@ -197,11 +199,8 @@ public class StaffController {
 			
 		}
 		
+		//getStaff하여 가져온 정보를 setStaffNo에 담기 
 		staffSkill.setStaffNo(staffService.getStaff(searchGender+"-"+searchGender2).getStaffNo());
-		
-		
-		
-		
 		staffService.updateStaffSkill(staffSkill);
 		
 		return "redirect:/staff_search_form.jsp";
@@ -213,18 +212,17 @@ public class StaffController {
 											throws Exception{
 		
 		System.out.println("deleteStaff 시작");
-				
+		
+		//gender의 값이 있음을 확인 한 후 1)staffSkill 데이터 삭제 후 2)staff 데이터 삭제
 		if(searchGender != null && searchGender != null && searchGender2 != "" && searchGender2 != "" ) {
-			
 			staffService.deleteStaffSkill(staffService.getStaff(searchGender+"-"+searchGender2).getStaffNo());
-			
 			staffService.deleteStaff(searchGender+"-"+searchGender2);
-			
 		}
 		
 		return "redirect:/staff_search_form.jsp";
 	}
 	
+	// updel 페이지에 정보를 해당 staff의 정보를 담기 위한 메소드 
 	@RequestMapping(value="getStaff", method=RequestMethod.GET)
 	public String getStaff(@RequestParam("staffNo") int staffNo, Model model) throws Exception{
 		

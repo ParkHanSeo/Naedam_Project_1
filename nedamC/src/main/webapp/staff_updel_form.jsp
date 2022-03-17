@@ -15,10 +15,24 @@
 	<script>
 		function fncUpdateStaff(){
 			
+			var updateStaff = $("form[name=updateStaff]").serialize();
 			var skillCode = [];
 			$("input[name=skillCode]:checked").each(function(){
 				skillCode.push($(this).val());
 			});
+			
+			
+			$.ajax({
+ 			 	 url : "/staff/updateStaff",
+	  		  	 type : "POST",
+	  		  	 data : updateStaff,
+ 		  	 	 dataType : "json",
+   		 	 success : function(JSONData, status){
+   		 		
+   		 	 } 	 	 
+	  		});
+			 alert("수정이 완료되었습니다.")
+			 window.close();
 			
 			$('form').attr("method", "POST").attr("action", "/staff/updateStaff").submit();
 		}
@@ -48,18 +62,31 @@
 
 			$("button[name='delete']").on("click" , function(){
 				
-				var searchGender = $("input[name='searchGender']").val();
-				var searchGender2 = $("input[name='searchGender2']").val();
-				
-				alert(searchGender);
-				alert(searchGender2);
-				
+
 				if(!confirm("정말 삭제 하시겠습니까?")){
 					alert("취소 되었습니다.");
 					return;
 				}else{
+					var searchGender = $("input[name='searchGender']").val();
+					var searchGender2 = $("input[name='searchGender2']").val();
+					
+					$.ajax({
+						url : "/staff/deleteStaff?searchGender="+searchGender+"&searchGender2="+searchGender2,
+						method : "GET" ,
+						dataType : "json" ,
+						headers : {
+							"Accept" : "application/json",
+							"Content-Type" : "application/json"	 						
+	 					} ,
+						success : function(JSONData, status){
+		   					
+		   				}
+	 					
+					})
 					alert("삭제 되었습니다.");
-					location.href="/staff/deleteStaff?searchGender="+searchGender+"&searchGender2="+searchGender2;
+					opener.document.location.reload();
+ 					window.close();
+					
 				}
 				
 			});				
